@@ -64,8 +64,12 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
         self.presentCompletion = presentCompletion
         self.dismissAnimation = dismissAnimation
         self.dismissCompletion = dismissCompletion
-        
+      
+        #if swift(>=4.2)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateForStatusBar), name: UIApplication.didChangeStatusBarFrameNotification, object: nil)
+        #else
         NotificationCenter.default.addObserver(self, selector: #selector(updateForStatusBar), name: .UIApplicationDidChangeStatusBarFrame, object: nil)
+        #endif
     }
 
     // MARK: - Public methods
@@ -287,8 +291,12 @@ final class DeckPresentationController: UIPresentationController, UIGestureRecog
         }
         
         updateSnapshotViewAspectRatio()
+        #if swift(>=4.2)
+        containerView.bringSubviewToFront(roundedViewForPresentedView)
+        #else
         containerView.bringSubview(toFront: roundedViewForPresentedView)
-        
+        #endif
+      
         if presentedViewController.view.isDescendant(of: containerView) {
             UIView.animate(withDuration: 0.1) { [weak self] in
                 guard let `self` = self else {
